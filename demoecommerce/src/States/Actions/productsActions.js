@@ -1,41 +1,59 @@
-export const FETCH_PRODUCTS_REQUEST = 'FETCH_PRODUCTS_REQUEST';
-export const FETCH_PRODUCTS_SUCCESS = 'FETCH_PRODUCTS_SUCCESS';
-export const FETCH_PRODUCTS_FAILURE = 'FETCH_PRODUCTS_FAILURE';
-
-export const fetchProductsRequest = () => ({
-    type: FETCH_PRODUCTS_REQUEST,
-});
 export const fetchProductsSuccess = (products) => ({
-    type: FETCH_PRODUCTS_SUCCESS,
+    type: "All Products",
     payload: products,
 });
-export const fetchProductsFailure = (error) => ({
-    type: FETCH_PRODUCTS_FAILURE,
-    payload: error,
+
+export const fetchSingleProduct = (product) => ({
+    type: "fetch single product",
+    payload: product,
 });
+
 
 export const fetchProducts = () => {
   return async (dispatch) => {
-    dispatch(fetchProductsRequest());
     try {
-      const response = await fetch('https://xb49ytvjqi.execute-api.ap-south-1.amazonaws.com/beta/getAllProducts'); // Replace with your API endpoint
+      const response = await fetch('https://hcsuugifgl.execute-api.ap-south-1.amazonaws.com/beta/products'); 
       const data = await response.json();
 
-      console.log('API response data:', data); // Log the response data
+      console.log('API response data:', data); 
 
-      // Parse the JSON string in the body field
-      const products = JSON.parse(data.body);
+      const products = data.body;
 
-      // Check if the parsed data is an array
       if (Array.isArray(products)) {
         dispatch(fetchProductsSuccess(products));
       } else {
         throw new Error('Unexpected response format');
       }
     } catch (error) {
-      console.error('Error fetching products:', error); // Log the error
-      dispatch(fetchProductsFailure(error.message));
+      console.error('Error fetching products:', error); 
     }
   };
 };
 
+export const fetchProduct = (product_id) => {
+  return async (dispatch) => {
+    try {
+      const response = await fetch(
+        "https://hcsuugifgl.execute-api.ap-south-1.amazonaws.com/beta/products/single",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            product_id: product_id
+          }),
+        }
+      );
+      const data = await response.json();
+      const singleProduct = data.body;
+      if (response.status === 200) {
+        dispatch(fetchSingleProduct(singleProduct));
+      } else {
+        throw new Error('Error failing fetching products')
+      }
+    } catch (error) {
+      throw new Error('Enexpected Error Occured')
+    }
+  };
+};

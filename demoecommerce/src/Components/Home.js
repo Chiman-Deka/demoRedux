@@ -1,56 +1,37 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts } from '../States/Actions/productsActions';
-import { updateCart } from '../States/Actions/cartActions';
+import { useNavigate } from 'react-router-dom';
+import { fetchProducts, fetchProduct } from '../States/Actions/productsActions';
 
-// import * as React from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-  >
-    •
-  </Box>
-);
+
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.products.products || []); // Provide a default empty array
-  const loading = useSelector((state) => state.products.loading);
-  const error = useSelector((state) => state.products.error);
-
-  console.log("products",products);
+  const products = useSelector((state) => state.products.products ); 
 
   useEffect(() => {
     dispatch(fetchProducts());
-  }, [dispatch]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  const handleAddToCart = (newProduct) => {
-    console.log("Clicked",newProduct);
-    dispatch(updateCart(newProduct));
-  }
+  },[]);
 
   return (
     <div>
       <h1>All Products</h1>
-      <ul>
+      <Box sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px',
+                justifyContent: 'center',
+              }}>
         {products.map((product) => (
-          <Card sx={{ minWidth: 275 }}>
+          <Card sx={{minWidth: '500'}}>
           <CardContent>
             <Typography variant="body2">
               Product: {product.name}
@@ -66,12 +47,12 @@ const Home = () => {
             </Typography>
           </CardContent>
           <CardActions>
-            <Button size="small" onClick={()=> handleAddToCart({product})}>Add to Cart</Button>
+            <Button size="small" onClick={()=> navigate(`/product/${product.product_id}`)}>Details</Button>
           </CardActions>
         </Card>
 
         ))}
-      </ul>
+      </Box>
     </div>
   );
 };
